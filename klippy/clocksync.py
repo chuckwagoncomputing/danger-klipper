@@ -123,6 +123,7 @@ class ClockSync:
     def print_time_to_clock(self, print_time):
         return int(print_time * self.mcu_freq)
     def clock_to_print_time(self, clock):
+        #foobar logging.warning("clock: %s freq: %s", clock, self.mcu_freq)
         return clock / self.mcu_freq
     # system time conversions
     def get_clock(self, eventtime):
@@ -183,6 +184,7 @@ class SecondarySync(ClockSync):
         return int((print_time - adjusted_offset) * adjusted_freq)
     def clock_to_print_time(self, clock):
         adjusted_offset, adjusted_freq = self.clock_adj
+        #foobar logging.warning("clock: %s clock_adj: %s", clock, self.clock_adj)
         return clock / adjusted_freq + adjusted_offset
     # misc commands
     def dump_debug(self):

@@ -54,12 +54,17 @@ class SensorBase:
                 MAX_INVALID_COUNT), is_init=True)
     def _handle_spi_response(self, params):
         if params['fault']:
+            #foobar logging.warning("spi_temp fault")
             self.handle_fault(params['value'], params['fault'])
             return
         temp = self.calc_temp(params['value'])
         next_clock      = self.mcu.clock32_to_clock64(params['next_clock'])
         last_read_clock = next_clock - self._report_clock
         last_read_time  = self.mcu.clock_to_print_time(last_read_clock)
+        if last_read_time == last_read_clock:
+            logging.warning("Ignoring untrustworthy clock sync")
+            return
+        #foobar logging.warning("next_clock: %.0f last_read_clock: %.0f last_read_time: %.0f", next_clock, last_read_clock, last_read_time)
         self._callback(last_read_time, temp)
     def report_fault(self, msg):
         logging.warning(msg)
@@ -316,6 +321,7 @@ class MAX31865(SensorBase):
         #  temp = (-b +- sqrt(b**2 - 4ac)) / 2a
         discriminant = math.sqrt(CVD_A**2 - 4. * CVD_B * (1. - R_div_nominal))
         temp = (-CVD_A + discriminant) / (2. * CVD_B)
+        #foobar logging.warning("spi_temp %s %s", adc, temp)
         return temp
     def calc_adc(self, temp):
         # Calculate relative resistance via Callendar-Van Dusen formula:

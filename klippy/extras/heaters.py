@@ -86,9 +86,12 @@ class Heater:
             self.last_temp_time = read_time
             self.control.temperature_update(read_time, temp, self.target_temp)
             temp_diff = temp - self.smoothed_temp
+            #foobar logging.warning("temp_diff: %.0f smoothed_temp: %.0f", temp_diff, self.smoothed_temp)
             adj_time = min(time_diff * self.inv_smooth_time, 1.)
             self.smoothed_temp += temp_diff * adj_time
             self.can_extrude = (self.smoothed_temp >= self.min_extrude_temp)
+            #foobar logging.warning("temp_diff: %f smoothed_temp: %f read_time: %f", temp_diff, self.smoothed_temp, read_time)
+            #foobar logging.warning("temp: %.0f last_temp: %.0f smoothed_temp: %.0f read_time: %.0f last_temp_time: %.0f adj_time: %s", temp, self.last_temp, self.smoothed_temp, read_time, self.last_temp_time, adj_time)
         #logging.debug("temp: %.3f %f = %f", read_time, temp)
     def _handle_shutdown(self):
         self.is_shutdown = True
